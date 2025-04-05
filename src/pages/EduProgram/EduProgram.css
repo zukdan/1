@@ -1,0 +1,23 @@
+/* Стили для компонента EduProgram (доска с семестрами) */
+.edu-program-board {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+  
+  .add-semester-btn {
+    margin: 10px;
+    padding: 8px 16px;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .add-semester-btn:hover {
+    background-color: #4338ca;
+  }
+  

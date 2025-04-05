@@ -1,0 +1,24 @@
+
+.semester-column {
+    background-color: #ebecf0;
+    padding: 12px;
+    border-radius: 8px;
+    width: 280px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .semester-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
