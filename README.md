@@ -1,70 +1,168 @@
-# Getting Started with Create React App
+Отличный выбор! 🚀 Ubuntu 22.04 LTS (Jammy Jellyfish) — стабильная, поддерживаемая версия, идеально подходящая как для рабочих станций, так и для серверов. Но, как и любую систему, Ubuntu нужно настраивать для повышения безопасности — особенно если она подключена к интернету или используется для хранения конфиденциальных данных.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Вот пошаговое руководство по безопасной настройке Ubuntu 22.04 LTS 🛡️👇
 
-## Available Scripts
+🔐 1. Обновление системы
+bash
+Копировать
+Редактировать
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+Обновление закрывает известные уязвимости — делай это регулярно!
 
-In the project directory, you can run:
+🔥 2. Включение и настройка файрвола (UFW)
+bash
+Копировать
+Редактировать
+sudo apt install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+Проверить статус:
 
-### `npm start`
+bash
+Копировать
+Редактировать
+sudo ufw status verbose
+Если используешь SSH — обязательно разреши его ДО включения файрвола:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+bash
+Копировать
+Редактировать
+sudo ufw allow ssh
+🧱 3. Установка и настройка Fail2Ban (защита от брутфорса)
+bash
+Копировать
+Редактировать
+sudo apt install fail2ban
+sudo systemctl enable fail2ban --now
+Создай локальный конфиг:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+bash
+Копировать
+Редактировать
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+Можно изменить настройки, например:
 
-### `npm test`
+ini
+Копировать
+Редактировать
+[sshd]
+enabled = true
+maxretry = 5
+bantime = 1h
+🧩 4. Активация AppArmor
+Ubuntu 22.04 уже идёт с AppArmor, но стоит убедиться, что он работает:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+bash
+Копировать
+Редактировать
+sudo aa-status
+Если он не активен:
 
-### `npm run build`
+bash
+Копировать
+Редактировать
+sudo systemctl enable apparmor --now
+Можно принудительно включить профили:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+bash
+Копировать
+Редактировать
+sudo aa-enforce /etc/apparmor.d/*
+🛡 5. Настройка автоматических обновлений безопасности
+bash
+Копировать
+Редактировать
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure unattended-upgrades
+Проверь настройки в /etc/apt/apt.conf.d/50unattended-upgrades
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+🔍 6. Удаление ненужных пакетов
+Убери всё лишнее:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+bash
+Копировать
+Редактировать
+sudo apt autoremove --purge
+Отключи и удали ненужные сервисы:
 
-### `npm run eject`
+bash
+Копировать
+Редактировать
+sudo systemctl disable avahi-daemon
+sudo systemctl stop avahi-daemon
+🧪 7. Проверка на руткиты
+bash
+Копировать
+Редактировать
+sudo apt install rkhunter chkrootkit
+sudo rkhunter --update
+sudo rkhunter --check
+sudo chkrootkit
+🔐 8. Шифрование диска и домашней директории
+Если не зашифровал диск при установке — можно использовать LUKS или VeraCrypt, но это лучше делать при установке.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Для домашней директории:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+bash
+Копировать
+Редактировать
+sudo apt install ecryptfs-utils
+ecryptfs-migrate-home -u $USER
+⚠️ Сделай резервную копию перед этим!
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+👥 9. Надёжные пароли и блокировка экрана
+Используй сложные пароли
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Включи автоматическую блокировку:
 
-## Learn More
+Settings → Privacy → Screen Lock → включить блокировку
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+🔑 10. Настройка 2FA с Google Authenticator (опционально)
+bash
+Копировать
+Редактировать
+sudo apt install libpam-google-authenticator
+google-authenticator
+Добавь PAM-модуль:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+bash
+Копировать
+Редактировать
+sudo nano /etc/pam.d/gdm-password
+Вставь строку:
 
-### Code Splitting
+swift
+Копировать
+Редактировать
+auth required pam_google_authenticator.so
+🧼 11. Удаление "шпионов" и телеметрии
+Ubuntu отправляет некоторую телеметрию:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Отключи:
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+bash
+Копировать
+Редактировать
+sudo apt purge popularity-contest apport whoopsie
+🧠 12. Установи антивирус (если работаешь с Windows-файлами)
+bash
+Копировать
+Редактировать
+sudo apt install clamav clamtk
+sudo freshclam
+📋 Быстрый чеклист по безопасности
+Настройка	Статус
+Обновления и автозаплатки	✅
+UFW (файрволл)	✅
+Fail2Ban	✅
+AppArmor	✅
+Автоблокировка экрана	✅
+Сложные пароли	✅
+Шифрование /home или диска	✅ / ⚠️
+Проверка на rootkits	✅
+2FA	✅ / 💡
+Удаление телеметрии	✅
+🛠️ Хочешь автоматизировать?
+Хочу, могу написать bash-скрипт, который всё это делает сам — установит, настроит, активирует 🔐
+Хочешь? Или может ты планируешь использовать Ubuntu как сервер, рабочую станцию или просто для повседневного использования?
